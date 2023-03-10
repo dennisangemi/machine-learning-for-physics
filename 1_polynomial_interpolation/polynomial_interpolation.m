@@ -1,8 +1,17 @@
 %% Polynomial interpolation
+% Nel seguito di questo notebook verrà presentato un approccio alla base del 
+% ML: fitting polinomiale. Nello specifico verranno generati dei punti casualmente 
+% distribuiti attorno alla funzione seno e si otterà il polinomio interpolante 
+% (overfitting) che attraversa tutti i punti (di learning). In seguito si rappresenteranno 
+% polinomi aventi gradi inferiori a $n-1$ (dove $n$ rappresenta il numero di punti 
+% precedentemente generati) e si calcolerà lo scarto quadratico medio o root mean 
+% square error $E_{RMS}$ per ogni grado.
 
-% cleaning
+% cleaning enviroment
 clc
 clear
+%% 
+% Rappresento la funzione $y = sin(2\pi x)$ con $0 \leq x\leq 1$
 
 % funzione seno
 sen = @(x) sin(2*pi*x);
@@ -16,8 +25,11 @@ figure;
 plot(x,y)
 xlabel("x")
 ylabel("y")
-legend("sin(2\pix)")
-%%
+legend("y = sin(2\pix)")
+%% 
+% Genero set di learning avente |n_lrn| punti randomicamente distribuiti attorno 
+% alla funzione seno
+
 % genero set di learning
 n_lrn = 10;
 x_lrn = linspace(0,1,n_lrn);
@@ -33,7 +45,44 @@ legend("sin(2\pix)","data")
 xlabel("x")
 ylabel("y")
 hold off
-%%
+%% 
+% Il *polinomio interpolante* è quel polinomio la cui curva passa attraverso 
+% tutti i punti sperimentali. Se il polinomio ha forma generale $y=a_1 + a_2 x 
+% + a_3 x^3 + ... + a_n x^{n-1}$ dove 
+%% 
+% * $n$ è il numero di punti da fittare;
+% * $a_1$, $a_2$, ..., $a_n$ sono gli $n$ coefficienti del polinomio;
+%% 
+% Posto $\bar{x} = (x_1, x_2, ..., x_n)$, affinchè il polinomio attraversi tutti 
+% i punti del vettore $\bar{x}$ deve verificare le seguenti condizioni:
+%% 
+% * $y_1=a_1 + a_2 x_1 + a_3 x_1^3 + ... + a_n x_1^{n-1}$     (condizione passaggio 
+% per il punto $x_1$)
+% * $y_2=a_1 + a_2 x_2 + a_3 x_2^3 + ... + a_n x_2^{n-1}$     (condizione passaggio 
+% per il punto $x_2$)
+% * ...
+% * $y_n=a_1 + a_2 x_n + a_3 x_n^3 + ... + a_n x_n^{n-1}$     (condizione passaggio 
+% per il punto $x_n$)
+%% 
+% che rappresenta un sistema di $n$ equazioni in $n$ incognite. Il nostro obiettivo 
+% consiste nel risolvere il sistema per determinare gli $n$ coefficienti $a_1$, 
+% $a_2$, ..., $a_n$ e quindi il polinomio interpolante.
+% 
+% Sfruttando il formalismo matriciale è possibile rappresentare il sistema di 
+% $n$ equazioni come di seguito
+% 
+% $$\pmatrix{y_1 \cr y_2 \cr ... \cr y_n} = \pmatrix{1 & x_1 & x_1^2 & ... & 
+% x_1^{n-1} \cr 1 & x_2 & x_2^2 & ... & x_2^{n-1} \cr ... & ... & ... & ... & 
+% ... \cr 1 & x_n & x_n^2 & ... & x_n^{n-1}} \cdot \pmatrix{a_1 \cr a_2 \cr ... 
+% \cr a_n}$$
+% 
+% La matrice $\pmatrix{1 & x_1 & x_1^2 & ... & x_1^{n-1} \cr 1 & x_2 & x_2^2 
+% & ... & x_2^{n-1} \cr ... & ... & ... & ... & ... \cr 1 & x_n & x_n^2 & ... 
+% & x_n^{n-1}}$ prende il nome "matrice di Vandermonde" e si genera a partire 
+% da un singolo vettore <
+%% 
+% 
+
 % genero matrice di Vandermonde
 V = fliplr(vander(x_lrn))
 %% 
@@ -45,7 +94,8 @@ V = fliplr(vander(x_lrn))
 % e il vettore colonna y
 
 % determino i coefficienti
-a = pinv(V)*(y_lrn')
+% a = pinv(V)*(y_lrn')
+a = V\y_lrn'
 
 % ottengo il polinomio funzione degli scalari x e m (grado)
 poly = @(x,m) (x.^(0:m))*(a(1:m+1));
@@ -126,7 +176,7 @@ for j = 1:n_lrn
     end
 
     % calculating learning error
-    learning_error(j) = sqrt(sum((y_fit-y_lrn).^2));
+    learning_error(j) = sqrt(sum((y_fit-y_lrn).^2))/n_lrn;
 end
 
 % plotting learning error
