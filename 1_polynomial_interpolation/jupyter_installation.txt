@@ -1,0 +1,53 @@
+ 1393  pip --version
+ 1395  pip install notebook
+ 1397  jupyter notebook
+ 1398  pip --version
+ 1403  cat Miniconda3-py38_23.1.0-1-Linux-x86_64.sh 
+ 1405  sha256sum Miniconda3-py38_23.1.0-1-Linux-x86_64.sh 
+ 1406  bash Miniconda3-py38_23.1.0-1-Linux-x86_64.sh 
+ 1413  conda init
+ 1414  "$(/home/dennisangemi/miniconda3/bin/conda shell.YOUR_SHELL_NAME hook)
+ 1415  conda init
+ 1416  /home/dennisangemi/miniconda3/bin/conda shell.YOUR_SHELL_NAME hook
+ 1417  echo $SHELL
+ 1418  /home/dennisangemi/miniconda3/bin/conda shell./bin/bash hook
+ 1419  basename $SHELL
+ 1420  /home/dennisangemi/miniconda3/bin/conda shellbash hook
+ 1421  /home/dennisangemi/miniconda3/bin/conda shell.bash hook
+ 1422  conda init
+ 1428  bash Miniconda3-py38_23.1.0-1-Linux-x86_64.sh 
+ 1429  bash Miniconda3-py38_23.1.0-1-Linux-x86_64.sh -u
+ 1430  conda
+ 1435  conda deactivate
+ 1436  conda install xeus-octave -c conda-forge
+ 1437  cd GitHub/machine-learning-for-physics/
+ 1438  conda create -n myenv -c conda-forge xeus-octave
+ 1439  conda create --name joctave --clone myenv
+ 1440  conda activate joctave
+ 1441  conda install -c conda-forge notebook
+ 1442  jupyter notebook
+ 1443  conda deactivate
+ 1444  cd GitHub/machine-learning-for-physics/
+ 1445  conda joctave
+ 1446  conda activate joctave
+ 1447  jupyter notebook
+ 1448  conda deactivate
+ 1449  conda activate joctave
+ 1450  jupyter notebook
+ 1451  conda deactivate
+ 1452  conda config --set auto_activate_base false
+ 1453  sudo apt install x11-apps -y
+ 1454  sudo apt update
+ 1461  conda activate joctave
+ 1462  jupyter notebook
+ 1463  sudo apt install x11-apps -y
+ 1464  cd GitHub/machine-learning-for-physics/1_polynomial_interpolation/
+ 1465  conda activate joctave
+ 1466  jupyter notebook
+ 1467  sudo apt install xvfb
+ 1468  cd GitHub/machine-learning-for-physics/1_polynomial_interpolation/
+ 1469  conda activate joctave
+ 1470  xvfb-run jupyter notebook
+ 1471  jupyter notebook
+ 1472  xvfb-run jupyter notebook
+ 1473  conda deactivate
