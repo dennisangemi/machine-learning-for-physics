@@ -428,3 +428,6 @@ function output_vector = poly_predict(x,a,m)
     end
 end
 ```
+
+---
+Generated from [`.code/polynomial_interpolation.mlx`](code/polynomial_interpolation.mlx) with [Live Script to Markdown Converter](https://github.com/roslovets/Live-Script-to-Markdown-Converter)
