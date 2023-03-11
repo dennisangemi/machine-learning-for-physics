@@ -78,7 +78,8 @@ che rappresenta un sistema di $n$ equazioni in $n$ incognite. Il nostro obiettiv
 
 Sfruttando il formalismo matriciale è possibile rappresentare il sistema di $n$ equazioni come di seguito
 
-$\left(\begin{array}{c}
+$$
+\left(\begin{array}{c}
 y_1 \\
 y_2 \\
 ...\\
@@ -93,7 +94,8 @@ a_1 \\
 a_2 \\
 ...\\
 a_n 
-\end{array}\right)$.
+\end{array}\right)
+$$
 
 La matrice 
 
