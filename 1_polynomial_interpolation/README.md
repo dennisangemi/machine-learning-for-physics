@@ -142,11 +142,13 @@ V = 25x25
 
 ```
 
-Risolvo il sistema e determino i coefficienti $a_1$, $a_2$, ..., $a_n$ eseguendo il prodotto matriciale $V^{-1} \cdot \bar{y}$ in cui $\bar{y} =(y_1 ,y_2 ,...,y_n )$
+Alla luce della forma matriciale, è possibile determinare i coefficienti $a_1$, $a_2$, ..., $a_n$ (e quindi risolvere il sistema) eseguendo il prodotto righe per colonna tra l'inversa della matrice di Vandermonde $V^{-1}$ e il vettore colonna $\bar{y} =(y_1 ,y_2 ,...,y_n )$.
 
-Alla luce della forma matriciale, è possibile determinare i coefficienti $\alpha$ eseguendo il prodotto righe per colonna tra l'inversa della matrice di Vandermonde e il vettore colonna y.
+In  MATLAB è possibile eseguire questa operazione in due modi:
+- utilizzando la sintassi `V\y_lrn'`;
+- sfruttando la funzione `pinv()` che calcola la matrice pseudoinversa.
 
-In  MATLAB è possibile eseguire questa operazione sia sfruttando la funzione `pinv()` che determina la matrice pseudoinversa
+Il primo metodo sembra avere qualche problema quando la matrice di Vandermonde è molto grande quindi procediamo con la funzione `pinv()`
 
 ```matlab
 a = pinv(V)*(y_lrn')
@@ -169,23 +171,20 @@ a = 25x1
 
 ```
 
-oppure utilizzando la sintassi `V\y_lrn'`
+Una volta determinati i coefficienti, è possibile ottenere il polinomio $y=a_1 +a_2 x+a_3 x^3 +...+a_n x^{n-1}$ che in MATLAB assume la seguente forma
 
 ```matlab
-% determino i coefficienti
-% a = V\y_lrn'
-
 % ottengo il polinomio funzione degli scalari x e m (grado)
 % poly = @(x,m) (x.^(0:m))*(a(1:m+1));
 ```
 
-Determiniamo i valori previsti
+Calcoliamo e rappresentiamo quindi le ordinate previste dal polinomio completo (over-fitting)
 
 ```matlab
-% over-fitting
-% determino le ordinate previste dal
-% modello con poly_predict (funzione definita in basso)
-% poly_predict(x,a,n_lrn-1)
+% definisco funzione poly_predict (vedi fine notebook)
+% determino ordinate previste dal modello fornendo in input le ascisse x, i
+% coefficienti a del polinomio, il grado m del polinomio
+% poly_predict(x,a,m)
 
 % plotting predicted values
 figure;
@@ -199,21 +198,25 @@ xlabel("x")
 ylabel("y")
 ylim([-1.5 1.5])
 xlim([0 1])
+title("over-fitting: m = n-1")
 ```
 
 ![figure_2.png](images/figure_2.png)
 
 Cosa succede utilizzando polinomi di grado inferiore a $n-1$?
 
-```matlab
-% plotting at different M (polynomial order)
-for m = 0:3
+Per ottenere il polinomio arrestato a gradi $m < n-1$, è necessario determinare i coefficienti $\bar{a}$ considerando la matrice di Vandermonde $V$ avente $m+1$ colonne (non completa). Avendo determinato precedentemente la matrice di Vandermonde, ci limitiamo a selezionare tutte le righe e $m+1$ colonne utilizzando la sintassi MATLAB `V(:,1:m+1)`
 
-    % uso funzione vander personalizzata che permette di costruire matrici di
-    % Vandermonde incomplete in funzione del grado m fornito
-    V = custom_vander(x_lrn,m)
-    a = pinv(V)*(y_lrn')
+```matlab
+for m = 0:3
     
+    % display Vandermonde matrix
+    V(:,1:m+1)
+
+    % determino coefficienti
+    a = pinv(V(:,1:m+1))*(y_lrn')
+    
+    % plotting
     figure;
     plot(x,poly_predict(x,a,m),"r")
     hold on
@@ -318,24 +321,44 @@ a = 4x1
 Per questa occasione utilizzeremo il root mean square error (o scarto quadratico medio)
 
 $$
-E_{RMS} =\frac{1}{N}\sum_i^N (P_i -O_i )^2
+E_{RMS} =\frac{1}{n}\sum_i^n (P_i -O_i )^2
 $$
 
 dove
 
-   -  $N$ rappresenta il numero di punti; 
+   -  $n$ rappresenta il numero di punti; 
    -  $P_i$ il valore previsto; 
    -  $O_i$ il valore osservato 
 
-Noi siamo interessati all'andamento di $E_{RMS}$ in funzione del grado $m$ del polinomio quindi, se il polinomio completo ha grado $M$, calcoleremo l'errore $M+1=N$ volte
+Essendo interessati all'andamento di $E_{RMS}$ in funzione del grado $m$ del polinomio, calcoleremo l'errore $n$ volte in quanto $0\leq m \leq n-1$.
+
+Prima di procedere al calcolo dell'errore di testing (`testing_error`) è necessario generare un apposito set di testing $(x_{tst}, y_{tst})$ e stimare le ordinate y_fit_tst sulla base del modello di learning
 
 ```matlab
 % genero set di testing
 n_tst = 30;
 x_tst = linspace(0,1,n_tst);
 y_tst = sen(x_tst) + rand_between(-eps,eps,n_tst)';
+```
 
-% initializing vectors
+```matlab
+% rappresento learning set e testing set
+plot(x,y,"LineWidth",lw)
+hold on
+plot(x_lrn,y_lrn,'o',"LineWidth",1)
+plot(x_tst,y_tst,'o',"LineWidth",1)
+hold off
+xlabel("x")
+ylabel("y")
+ylim([-1.5 1.5])
+xlim([0 1])
+legend("y=sin(2\pix)","Learnings set","Test set")
+title(sprintf("Learning set (%d points) and testing set (%d)",n_lrn,n_tst))
+```
+![figure_8.png](images/figure_8.png)
+
+```matlab
+% initializing error vectors
 learning_error = zeros(1,n_lrn);
 testing_error = zeros(1,n_lrn);
 y_fit_lrn = zeros(1,n_lrn);
@@ -343,8 +366,7 @@ y_fit_tst = zeros(1,n_tst);
 
 for j = 1:n_lrn
     m = j-1;
-    V = custom_vander(x_lrn,m);
-    a = pinv(V)*(y_lrn');
+    a = pinv(V(:,1:j))*(y_lrn');
     y_fit_lrn = poly_predict(x_lrn,a,m);
     y_fit_tst = poly_predict(x_tst,a,m);
 
@@ -376,9 +398,6 @@ legend("Training","Testing")
 % b: estremo superiore
 % n: numero di elementi da generare
 % output: vettore
-```
-
-```matlab
 function randbet = rand_between(a,b,n)
     randbet = a + (b-a).*rand(n,1);
 end
