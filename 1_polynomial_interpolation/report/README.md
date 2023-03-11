@@ -33,7 +33,7 @@ xlim([0 1])
 ylim([-1.5 1.5])
 ```
 
-![figure_0.png](polynomial_interpolation_images/figure_0.png)
+![figure_0.png](README_images/figure_0.png)
 
 Genero set di learning avente `n_lrn` punti randomicamente distribuiti attorno alla funzione seno
 
@@ -60,7 +60,7 @@ xlim([0 1])
 ylim([-1.5 1.5])
 ```
 
-![figure_1.png](polynomial_interpolation_images/figure_1.png)
+![figure_1.png](README_images/figure_1.png)
 
 Il **polinomio interpolante** è quel polinomio la cui curva passa attraverso tutti i punti sperimentali. Se il polinomio ha forma generale $y=a_1 +a_2 x+a_3 x^3 +...+a_n x^{n-1}$ dove 
 
@@ -78,8 +78,7 @@ che rappresenta un sistema di $n$ equazioni in $n$ incognite. Il nostro obiettiv
 
 Sfruttando il formalismo matriciale è possibile rappresentare il sistema di $n$ equazioni come di seguito
 
-$$
-\left(\begin{array}{c}
+$\left(\begin{array}{c}
 y_1 \\
 y_2 \\
 ...\\
@@ -94,8 +93,7 @@ a_1 \\
 a_2 \\
 ...\\
 a_n 
-\end{array}\right)
-$$
+\end{array}\right)$.
 
 La matrice 
 
@@ -191,7 +189,7 @@ ylim([-1.5 1.5])
 xlim([0 1])
 ```
 
-![figure_2.png](polynomial_interpolation_images/figure_2.png)
+![figure_2.png](README_images/figure_2.png)
 
 Cosa succede utilizzando polinomi di grado inferiore a $n-1$?
 
@@ -235,7 +233,7 @@ V = 100x1
 a = -0.0078
 ```
 
-![figure_3.png](polynomial_interpolation_images/figure_3.png)
+![figure_3.png](README_images/figure_3.png)
 
 ```text:Output
 V = 100x2    
@@ -256,7 +254,7 @@ a = 2x1
 
 ```
 
-![figure_4.png](polynomial_interpolation_images/figure_4.png)
+![figure_4.png](README_images/figure_4.png)
 
 ```text:Output
 V = 100x3    
@@ -278,7 +276,7 @@ a = 3x1
 
 ```
 
-![figure_5.png](polynomial_interpolation_images/figure_5.png)
+![figure_5.png](README_images/figure_5.png)
 
 ```text:Output
 V = 100x4    
@@ -301,7 +299,7 @@ a = 4x1
 
 ```
 
-![figure_6.png](polynomial_interpolation_images/figure_6.png)
+![figure_6.png](README_images/figure_6.png)
 
 # Errore di learning e testing
 
@@ -356,7 +354,7 @@ legend("Training")
 legend("Training","Testing")
 ```
 
-![figure_7.png](polynomial_interpolation_images/figure_7.png)
+![figure_7.png](README_images/figure_7.png)
 
 # Funzioni
 
