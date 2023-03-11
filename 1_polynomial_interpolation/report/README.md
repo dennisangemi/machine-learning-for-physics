@@ -2,7 +2,7 @@
 
 Nel seguito di questo notebook verrà presentato un approccio alla base del ML: fitting polinomiale. Nello specifico verranno generati dei punti casualmente distribuiti attorno alla funzione seno e si otterà il polinomio interpolante (overfitting) che attraversa tutti i punti (di learning). In seguito si rappresenteranno polinomi aventi gradi inferiori a $n-1$ (dove $n$ rappresenta il numero di punti precedentemente generati) e si calcolerà lo scarto quadratico medio o root mean square error $E_{RMS}$ per ogni grado.
 
-```matlab:Code
+```matlab
 % cleaning enviroment
 clc
 clear
@@ -10,7 +10,7 @@ clear
 
 Rappresento la funzione $y=sin(2\pi x)$ con $0\le x\le 1$
 
-```matlab:Code
+```matlab
 % funzione seno
 sen = @(x) sin(2*pi*x);
 
@@ -19,7 +19,7 @@ x = linspace(0,1,100);
 y = sen(x);
 ```
 
-```matlab:Code
+```matlab
 % setto spessore linea
 lw = 1;
 
@@ -37,7 +37,7 @@ ylim([-1.5 1.5])
 
 Genero set di learning avente `n_lrn` punti randomicamente distribuiti attorno alla funzione seno
 
-```matlab:Code
+```matlab
 % genero set di learning
 n_lrn = 25;
 x_lrn = linspace(0,1,n_lrn);
@@ -46,7 +46,7 @@ eps = 0.2;
 y_lrn = sen(x_lrn) + rand_between(-eps,eps,n_lrn)';
 ```
 
-```matlab:Code
+```matlab
 % rappresento punti
 figure;
 plot(x,y,"LineWidth",lw)
@@ -78,7 +78,8 @@ che rappresenta un sistema di $n$ equazioni in $n$ incognite. Il nostro obiettiv
 
 Sfruttando il formalismo matriciale è possibile rappresentare il sistema di $n$ equazioni come di seguito
 
-$\left(\begin{array}{c}
+$$
+\left(\begin{array}{c}
 y_1 \\
 y_2 \\
 ...\\
@@ -93,7 +94,8 @@ a_1 \\
 a_2 \\
 ...\\
 a_n 
-\end{array}\right)$.
+\end{array}\right)
+$$
 
 La matrice 
 
@@ -110,7 +112,7 @@ prende il nome "matrice di Vandermonde" e si genera elevando gli elementi del ve
 
 In MATLAB è possibile generare la matrice di Vandermonde utilizzando la funzione `vander()`
 
-```matlab:Code
+```matlab
 % genero matrice di Vandermonde
 V = fliplr(vander(x_lrn))
 ```
@@ -136,7 +138,7 @@ Alla luce della forma matriciale, è possibile determinare i coefficienti $\alph
 
 In  MATLAB è possibile eseguire questa operazione sia sfruttando la funzione `pinv()` che determina la matrice pseudoinversa
 
-```matlab:Code
+```matlab
 a = pinv(V)*(y_lrn')
 ```
 
@@ -159,7 +161,7 @@ a = 100x1
 
 oppure utilizzando la sintassi `V\y_lrn'`
 
-```matlab:Code
+```matlab
 % determino i coefficienti
 % a = V\y_lrn'
 
@@ -169,7 +171,7 @@ oppure utilizzando la sintassi `V\y_lrn'`
 
 Determiniamo i valori previsti
 
-```matlab:Code
+```matlab
 % over-fitting
 % determino le ordinate previste dal
 % modello con poly_predict (funzione definita in basso)
@@ -193,7 +195,7 @@ xlim([0 1])
 
 Cosa succede utilizzando polinomi di grado inferiore a $n-1$?
 
-```matlab:Code
+```matlab
 % plotting at different M (polynomial order)
 for m = 0:3
 
@@ -317,7 +319,7 @@ dove
 
 Noi siamo interessati all'andamento di $E_{RMS}$ in funzione del grado $m$ del polinomio quindi, se il polinomio completo ha grado $M$, calcoleremo l'errore $M+1=N$ volte
 
-```matlab:Code
+```matlab
 % genero set di testing
 n_tst = 30;
 x_tst = linspace(0,1,n_tst);
@@ -358,7 +360,7 @@ legend("Training","Testing")
 
 # Funzioni
 
-```matlab:Code
+```matlab
 % randbet
 % a: estremo inferiore
 % b: estremo superiore
@@ -366,7 +368,7 @@ legend("Training","Testing")
 % output: vettore
 ```
 
-```matlab:Code
+```matlab
 function randbet = rand_between(a,b,n)
     randbet = a + (b-a).*rand(n,1);
 end
