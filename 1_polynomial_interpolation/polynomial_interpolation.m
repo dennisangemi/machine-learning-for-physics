@@ -20,8 +20,10 @@ sen = @(x) sin(2*pi*x);
 x = linspace(0,1,100);
 y = sen(x);
 %%
+% setto spessore linea
+lw = 1;
+
 % plotto funzione seno
-lw = 1.5; % plot line width
 figure;
 plot(x,y,"LineWidth",lw)
 xlabel("x")
@@ -34,11 +36,11 @@ ylim([-1.5 1.5])
 % alla funzione seno
 
 % genero set di learning
-n_lrn = 10;
+n_lrn = 25;
 x_lrn = linspace(0,1,n_lrn);
 % rumore
 eps = 0.2; 
-y_lrn = sin(2*pi*x_lrn) + rand_between(-eps,eps,n_lrn)';
+y_lrn = sen(x_lrn) + rand_between(-eps,eps,n_lrn)';
 %%
 % rappresento punti
 figure;
@@ -95,7 +97,6 @@ ylim([-1.5 1.5])
 
 % genero matrice di Vandermonde
 V = fliplr(vander(x_lrn))
-% latex(sym(V))
 %% 
 % Risolvo il sistema e determino i coefficienti $a_1$, $a_2$, ..., $a_n$ eseguendo 
 % il prodotto matriciale $V^{-1} \cdot \bar{y}$ in cui $\bar{y} = (y_1, y_2, ..., 
@@ -108,31 +109,26 @@ V = fliplr(vander(x_lrn))
 % In  MATLAB è possibile eseguire questa operazione sia sfruttando la funzione 
 % |pinv()| che determina la matrice pseudoinversa
 
-% a = pinv(V)*(y_lrn')
+a = pinv(V)*(y_lrn')
 %% 
 % oppure utilizzando la sintassi |V\y_lrn'|
 
 % determino i coefficienti
-a = V\y_lrn'
+% a = V\y_lrn'
 
 % ottengo il polinomio funzione degli scalari x e m (grado)
-poly = @(x,m) (x.^(0:m))*(a(1:m+1));
+% poly = @(x,m) (x.^(0:m))*(a(1:m+1));
 %% 
 % Determiniamo i valori previsti
 
 % over-fitting
-% z = zeros(1,100);
-% for i=1:100
-%     z(i) = poly(x(i),n_lrn-1);
-% end
+% determino le ordinate previste dal
+% modello con poly_predict (funzione definita in basso)
+% poly_predict(x,a,n_lrn-1)
 
-% utilizzando la funzione poly_predict determino le ordinate previste dal
-% modello
-z = poly_predict(x,poly,n_lrn-1)
-%%
 % plotting predicted values
 figure;
-plot(x,z,"r","LineWidth",lw)
+plot(x,poly_predict(x,a,n_lrn-1),"r","LineWidth",lw)
 hold on
 plot(x_lrn,y_lrn,'ob',"LineWidth",1)
 plot(x,y,"g","LineWidth",lw)
@@ -146,16 +142,15 @@ xlim([0 1])
 % Cosa succede utilizzando polinomi di grado inferiore a $n-1$?
 
 % plotting at different M (polynomial order)
-for m = 1:3
+for m = 0:3
 
-    % funzione vander personalizzata che permette di costruire matrici di
+    % uso funzione vander personalizzata che permette di costruire matrici di
     % Vandermonde incomplete in funzione del grado m fornito
     V = custom_vander(x_lrn,m)
-    a = V\y_lrn'
-    poly = @(x,m) (x.^(0:m))*(a(1:m+1));
+    a = pinv(V)*(y_lrn')
     
     figure;
-    plot(x,poly_predict(x,poly,m),"r")
+    plot(x,poly_predict(x,a,m),"r")
     hold on
     plot(x_lrn,y_lrn,'ob')
     plot(x,y,"g")
@@ -167,7 +162,7 @@ for m = 1:3
     xlim([0 1])
     title(sprintf("M = %d",m))
 end
-%% Errore di learning
+%% Errore di learning e testing
 % Per questa occasione utilizzeremo il root mean square error (o scarto quadratico 
 % medio)
 % 
@@ -183,33 +178,53 @@ end
 % del polinomio quindi, se il polinomio completo ha grado $M$, calcoleremo l'errore 
 % $M+1 = N$ volte
 
+% genero set di testing
+n_tst = 30;
+x_tst = linspace(0,1,n_tst);
+y_tst = sen(x_tst) + rand_between(-eps,eps,n_tst)';
+
 % initializing vectors
 learning_error = zeros(1,n_lrn);
-y_fit = learning_error;
+testing_error = zeros(1,n_lrn);
+y_fit_lrn = zeros(1,n_lrn);
+y_fit_tst = zeros(1,n_tst);
 
 for j = 1:n_lrn
     m = j-1;
     V = custom_vander(x_lrn,m);
-    a = V\y_lrn';
-    poly = @(x,m) (x.^(0:m))*(a(1:m+1));
-    y_fit = poly_predict(x_lrn,poly,m);
+    a = pinv(V)*(y_lrn');
+    y_fit_lrn = poly_predict(x_lrn,a,m);
+    y_fit_tst = poly_predict(x_tst,a,m);
 
     % calculating learning error
-    learning_error(j) = sqrt(sum((y_fit-y_lrn).^2))/n_lrn;
+    learning_error(j) = sqrt(sum((y_fit_lrn-y_lrn).^2))/n_lrn;
+
+    % calculating testing error
+    testing_error(j) = sqrt(sum((y_fit_tst-y_tst).^2))/n_tst;
 end
-%%
-% plotting learning error
+
+% plotting 
 plot(0:n_lrn-1,learning_error,"-o","LineWidth",lw)
+hold on
+plot(0:n_lrn-1,testing_error,"-o","LineWidth",lw)
+hold off
 xlabel("M (grado del polinomio)")
 ylabel("E_{RMS}")
 legend("Training")
+legend("Training","Testing")
 %% Funzioni
 
+% randbet
+% a: estremo inferiore
+% b: estremo superiore
+% n: numero di elementi da generare
+% output: vettore
+%%
 function randbet = rand_between(a,b,n)
     randbet = a + (b-a).*rand(n,1);
 end
 
-% creo funzione custom_vander
+% custom_vander
 % x: vettore a partire da cui calcolare la matrice di Vandermonde arrestata
 % m: grado del polinomio personalizzato
 function [output_matrix] = custom_vander(x,m)
@@ -219,11 +234,13 @@ function [output_matrix] = custom_vander(x,m)
     end
 end
 
-% funzione poly_predict permette di ottenere le ordinate dato un polinomio P
-% x: vettore
-% poly: polinomio (function handle)
-% m: scalare. Grado del polinomio
-function output_vector = poly_predict(x,poly,m)
+% poly_predict
+% descrizione: permette di ottenere le ordinate dati i parametri seguenti
+% x: vettore (ordinate)
+% a: vettore (coefficienti del polinomio)
+% m: scalare (grado del polinomio)
+function output_vector = poly_predict(x,a,m)
+    poly = @(x,m) (x.^(0:m))*(a(1:m+1));
     lx = length(x);
     output_vector = zeros(1,lx);
     for i=1:lx
