@@ -62,6 +62,7 @@ ylim([-1.5 1.5])
 
 ![figure_1.png](images/figure_1.png)
 
+## Riferimenti
 Il **polinomio interpolante** è quel polinomio la cui curva passa attraverso tutti i punti sperimentali. Se il polinomio ha forma generale $y=a_1 +a_2 x+a_3 x^3 +...+a_n x^{n-1}$ dove 
 
    -  $n$ è il numero di punti da fittare; 
@@ -120,6 +121,7 @@ $$
 
 prende il nome "matrice di Vandermonde" e si genera elevando gli elementi del vettore $\bar{x}$  da 0 a $n-1$.
 
+## Applicazioni
 In MATLAB è possibile generare la matrice di Vandermonde utilizzando la funzione `vander()`
 
 ```matlab
@@ -316,7 +318,7 @@ a = 4x1
 
 ![figure_6.png](images/figure_6.png)
 
-# Errore di learning e testing
+## Errore di learning e testing
 
 Per questa occasione utilizzeremo il root mean square error (o scarto quadratico medio)
 
@@ -390,7 +392,7 @@ legend("Training","Testing")
 
 ![figure_7.png](images/figure_7.png)
 
-# Funzioni
+## Funzioni
 
 ```matlab
 % randbet
