@@ -55,9 +55,7 @@ xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png
-](README_images//home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png
-)
+![PCA](./README_images/figure_0.png)
 
 ```matlab:Code
 % calcolo media
@@ -72,10 +70,6 @@ yc = y-ym;
 ```matlab:Code
 % plotto distribuzione centrata
 plot(xc(l==0),yc(l==0),'o')
-```
-
-```text:Output
-Unrecognized function or variable 'l'.
 ```
 
 ```matlab:Code
