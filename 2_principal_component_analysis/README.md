@@ -29,13 +29,13 @@ y = data(:,2);
 hist(x)
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png](.README_images/figure_0.png)
+![figure_0.png](.README_images/figure_0.png)
 
 ```matlab
 hist(y)
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_1.png](.README_images/figure_1.png)
+![figure_1.png](.README_images/figure_1.png)
 
 ```matlab
 
@@ -44,7 +44,7 @@ xlim([floor(min(x))-1 ceil(max(x))]+1)
 ylim([floor(min(y))-1 ceil(max(y))]+1)
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_2.png](.README_images/figure_2.png)
+![figure_2.png](.README_images/figure_2.png)
 
 Per filtrare le x e le y appartenenti alla prima distribuzione mi basta usare la sintassi `x(l==0)` e `y(l==0)` che sta per "prendimi le righe che rispettano la condizione `l==0`". Procedo quindi a rappresentare queste due distribuzioni
 
@@ -63,7 +63,7 @@ xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_3.png](.README_images/figure_3.png)
+![figure_3.png](.README_images/figure_3.png)
 
 ```matlab
 % calcolo media
@@ -90,7 +90,7 @@ ylabel("$y$",'Interpreter','latex')
 title("Distribuzioni centrate nell'origine")
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_4.png](.README_images/figure_4.png)
+![figure_4.png](.README_images/figure_4.png)
 
 ```matlab
 % esporto in md
