@@ -2,64 +2,70 @@
 
 Lorem Ipsum
 
-```matlab:Code
-% add functions stored in an other path
-addpath(genpath('../../functions'))
+```matlab
+clc
+clear
+close all
 ```
 
-Farò uso della runzione `rand_between()` per generare valori casuali normalmente distribuiti tra due estremi.
+Genero distribuzione normale di $n$ punti random con deviazione standard $\sigma$ e media $\mu$
 
-```matlab:Code
-% rand_between
-% a: estremo inferiore
-% b: estremo superiore
-% n: numero di elementi da generare
-% output: vettore
-% function randbet = rand_between(a,b,n)
-%     randbet = a + (b-a).*rand(n,1);
-% end
-```
+```matlab
+n = 500;                % numero di punti
+sigma = 2;              % deviazione standard
+mu = 15;                % media
 
-```matlab:Code
-% genero due distribuzioni
-
-% ogni distribuzione conterrà n punti
-n = 50;
-
-% prima distribuzione
-x = rand_between(2,6,n);
-y = rand_between(1,3,n);
+% genero primo set di dati (l = 0)
+data = sigma.*randn(n,2) + mu;
 l = repelem(0,n,1);
 
-% concateno i vettori x,y,l per popolarli con i punti della seconda
-% distribuzione
-x = [x;rand_between(1,4,50)];
-y = [y; rand_between(3.5,5,n)];
+% concateno secondo set di dati (l = 1)
+data = [data; (sigma*0.8).*randn(n,2) + mu*0.3];
 l = [l; repelem(1,n,1)];
+x = data(:,1);
+y = data(:,2);
+
+% rappresento dati
+hist(x)
 ```
+
+![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png](.README_images/figure_0.png)
+
+```matlab
+hist(y)
+```
+
+![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_1.png](.README_images/figure_1.png)
+
+```matlab
+
+plot(x,y,'o')
+xlim([floor(min(x))-1 ceil(max(x))]+1)
+ylim([floor(min(y))-1 ceil(max(y))]+1)
+```
+
+![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_2.png](.README_images/figure_2.png)
 
 Per filtrare le x e le y appartenenti alla prima distribuzione mi basta usare la sintassi `x(l==0)` e `y(l==0)` che sta per "prendimi le righe che rispettano la condizione `l==0`". Procedo quindi a rappresentare queste due distribuzioni
 
-```matlab:Code
+```matlab
 % rappresento la prima distribuzione
 plot(x(l==0),y(l==0),'o')
 hold on
 % rappresento la seconda distribuzione
 plot(x(l==1),y(l==1),'o')
 hold off
-xlim([0 7])
-ylim([0 6])
+xlim([floor(min(x))-1 ceil(max(x))]+1)
+ylim([floor(min(y))-1 ceil(max(y))]+1)
 grid on
 legend("$l = 0$","$l = 1$",'Interpreter','latex')
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 ```
 
-![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png
-](README_images//home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_0.png
-)
+![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_3.png](.README_images/figure_3.png)
 
-```matlab:Code
+```matlab
 % calcolo media
 xm = mean(x);
 ym = mean(y);
@@ -69,26 +75,31 @@ xc = x-xm;
 yc = y-ym;
 ```
 
-```matlab:Code
+```matlab
 % plotto distribuzione centrata
 plot(xc(l==0),yc(l==0),'o')
-```
-
-```text:Output
-Unrecognized function or variable 'l'.
-```
-
-```matlab:Code
 hold on
 plot(xc(l==1),yc(l==1),'o')
 hold off
-xlim([-4 4])
-ylim([-3 3])
+xlim([floor(min(xc))-1 ceil(max(xc))]+1)
+ylim([floor(min(yc))-1 ceil(max(yc))]+1)
 grid on
 legend("$l = 0$","$l = 1$",'Interpreter','latex')
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 title("Distribuzioni centrate nell'origine")
+```
+
+![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_4.png](.README_images/figure_4.png)
+
+```matlab
+% esporto in md
+livescript2markdown("pca.mlx","../README.md","AddMention",true)
+```
+
+```text:Output
+Error using livescript2markdown
+Invalid argument at position 1. The following files do not exist: 'pca.mlx'.
 ```
 
 ***
