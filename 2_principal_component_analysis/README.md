@@ -63,7 +63,11 @@ xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 ```
 
+<<<<<<< HEAD
 ![/home/dennisangemi/Documenti/GitHub/machine-learning-for-physics/2_principal_component_analysis/README_images/figure_3.png](.README_images/figure_3.png)
+=======
+![PCA](./README_images/figure_0.png)
+>>>>>>> 6122cfcec91bf6f4e514788cecdabaad3f012fbf
 
 ```matlab
 % calcolo media
@@ -78,6 +82,12 @@ yc = y-ym;
 ```matlab
 % plotto distribuzione centrata
 plot(xc(l==0),yc(l==0),'o')
+<<<<<<< HEAD
+=======
+```
+
+```matlab:Code
+>>>>>>> 6122cfcec91bf6f4e514788cecdabaad3f012fbf
 hold on
 plot(xc(l==1),yc(l==1),'o')
 hold off
