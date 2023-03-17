@@ -34,6 +34,8 @@ xlim([floor(min(x))-1 ceil(max(x))]+1)
 ylim([floor(min(y))-1 ceil(max(y))]+1)
 ```
 
+![figure_0.png](README_images/figure_0.png)
+
 Per filtrare le x e le y appartenenti alla prima distribuzione mi basta usare la sintassi `x(l==0)` e `y(l==0)` che sta per "prendimi le righe che rispettano la condizione `l==0`". Procedo quindi a rappresentare queste due distribuzioni
 
 ```matlab
@@ -50,6 +52,8 @@ legend("$l = 0$","$l = 1$",'Interpreter','latex','Location','best')
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 ```
+
+![figure_1.png](README_images/figure_1.png)
 
 ```matlab
 % calcolo media
@@ -111,9 +115,37 @@ $$
 ```matlab
 % creo matrice trasformazione
 linear_trasformation = [1 1; -1 1]
+```
+
+```text:Output
+linear_trasformation = 2x2    
+     1     1
+    -1     1
+
+```
+
+```matlab
 
 % applico trasformazione
 transformed_data = (linear_trasformation*(data'))'
+```
+
+```text:Output
+transformed_data = 1000x2    
+   35.9452   -5.4436
+   29.2648   -0.1362
+   31.9673   -0.6371
+   29.6368   -0.9509
+   28.0531    0.6450
+   27.4641    0.7300
+   27.8715    1.8958
+   31.5756   -2.4742
+   28.3844    0.6172
+   28.9019    2.7785
+
+```
+
+```matlab
 
 x = transformed_data(:,1);
 y = transformed_data(:,2);
@@ -132,9 +164,18 @@ ylabel("$y$",'Interpreter','latex')
 title("Distribuzioni ruotate")
 ```
 
+![figure_2.png](README_images/figure_2.png)
+
 ```matlab
 % esporto in md
 livescript2markdown("pca.mlx","../README.md","AddMention",true)
+```
+
+```text:Output
+Coverting latex to markdown is complete
+README.md
+Note: Related images are saved in README_images
+ans = "C:\Users\Dennis Angemi\Documents\GitHub\machine-learning-for-physics\2_principal_component_analysis\README.md"
 ```
 
 ***
