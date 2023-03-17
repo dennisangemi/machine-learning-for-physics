@@ -2,7 +2,7 @@
 
 Lorem Ipsum
 
-```matlab:Code
+```matlab
 clc
 clear
 close all
@@ -47,7 +47,7 @@ $$
 
 In `MATLAB` la sintassi da utilizzare è \texttt{sigma.*randn(n,2)} dove `sigma = [2 0.9]` con $\sigma_x =2$, $\sigma_y =0.9$.
 
-```matlab:Code
+```matlab
 n = 500;                % numero di punti
 sigma = [2 0.9];        % deviazione standard su x e su y
 mu = 15;                % media
@@ -75,7 +75,7 @@ ylim([floor(min(y))-1 ceil(max(y))]+1)
 
 Per filtrare le x e le y appartenenti alla prima distribuzione mi basta usare la sintassi `x(l==0)` e `y(l==0)` che sta per "prendimi le righe che rispettano la condizione `l==0`". Procedo quindi a rappresentare queste due distribuzioni
 
-```matlab:Code
+```matlab
 % rappresento la prima distribuzione
 plot(x(l==0),y(l==0),'o')
 hold on
@@ -124,7 +124,7 @@ y_1  & y_2  & ... & y_n
 \end{array}\right)
 $$
 
-```matlab:Code
+```matlab
 % creo matrice trasformazione
 linear_trasformation = [1 1; -1 1]
 ```
@@ -136,7 +136,7 @@ linear_trasformation = 2x2
 
 ```
 
-```matlab:Code
+```matlab
 
 % applico trasformazione
 transformed_data = (linear_trasformation*(data'))'
@@ -157,7 +157,7 @@ transformed_data = 1000x2
 
 ```
 
-```matlab:Code
+```matlab
 
 x = transformed_data(:,1);
 y = transformed_data(:,2);
@@ -172,7 +172,7 @@ endpoints = array2table(endpoints,"VariableNames",{'x','y'})
 |1|1|-9|
 |2|38|8|
 
-```matlab:Code
+```matlab
 
 % rappresento distribuzioni ruotate
 plot(x(l==0),y(l==0),'o')
@@ -196,7 +196,7 @@ title("Distribuzioni ruotate")
 
 per centrare bla bla
 
-```matlab:Code
+```matlab
 % calcolo media
 xm = mean(x);
 ym = mean(y);
@@ -215,7 +215,7 @@ endpoints = array2table(endpoints,"VariableNames",{'x','y'})
 |1|-18|-9|
 |2|18|8|
 
-```matlab:Code
+```matlab
 % plotto distribuzione centrata
 plot(xc(l==0),yc(l==0),'o')
 hold on
@@ -239,7 +239,7 @@ title("Distribuzioni centrate nell'origine")
 
 Questo documento è stato generato convertendo in markdown un `MATLAB` livescript utilizzano il tool `livescript2markdown`
 
-```matlab:Code
+```matlab
 % esporto in md
 livescript2markdown("pca.mlx","../README.md","AddMention",true,"Format","github")
 ```
