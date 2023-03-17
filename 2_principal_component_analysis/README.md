@@ -8,7 +8,44 @@ clear
 close all
 ```
 
-Genero distribuzione normale di $n$ punti random con deviazione standard $\sigma$ e media $\mu$
+## Distribuzione normale
+
+Genero distribuzione normale di $n$ punti random con deviazione standard $\sigma$ e media $\mu$. 
+
+In `MATLAB` è possibile generare delle distribuzioni normali utilizzando la funzione `randn();` tale funzione restituisce una distribuzione centrata sullo zero ($\mu =0$) e deviazione standard unitaria ($\sigma =1$). Qualora si volessero modificare tali parametri sarà sufficiente moltiplicare l'output per la $\sigma$ voluta e aggiungere $\mu$ al risultato del prodotto. La sintassi sarà quindi del tipo \texttt{data = sigma.*randn(n,2) + mu.} Si noti che il numero `2` come argomento della funzione `randn()` indica il numero di colonne da generare: una per le ascisse $x$, una per le ordinate $y$.
+
+Nel caso in cui si volesse specificare una deviazione standard differente per le $x$ e per le $y$ per modificare la forma della distribuzione, è possibile porre $\sigma =\left(\begin{array}{cc}
+\sigma_x  & \sigma_y 
+\end{array}\right)$.
+
+In tal modo, se $P$ è la matrice output della funzione `randn()` 
+
+$$
+P=\left(\begin{array}{cc}
+x_1  & y_1 \\
+x_2  & y_2 \\
+... & ...\\
+x_n  & y_n 
+\end{array}\right)
+$$
+
+sarà sufficiente effettuare moltiplicazione elemen-wise $\sigma \cdot P$ per modificare la deviazione standard della distribuzione:
+
+$$
+\sigma \cdot P=\sigma_x \left(\begin{array}{c}
+x_1 \\
+x_2 \\
+...\\
+x_n 
+\end{array}\right)+\sigma_y \left(\begin{array}{c}
+y_1 \\
+y_2 \\
+...\\
+y_n 
+\end{array}\right)
+$$
+
+In `MATLAB` la sintassi da utilizzare è \texttt{sigma.*randn(n,2)} dove `sigma = [2 0.9]` con $\sigma_x =2$, $\sigma_y =0.9$.
 
 ```matlab
 n = 500;                % numero di punti
@@ -79,6 +116,8 @@ ylabel("$y$",'Interpreter','latex')
 % ylabel("$y$",'Interpreter','latex')
 % title("Distribuzioni centrate nell'origine")
 ```
+
+## Rotazione
 
 Adesso applichiamo una trasformazinoe lineare alle distribuzioni dei dati. Se la matrice della trasformazione $T$ è
 
