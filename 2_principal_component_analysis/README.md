@@ -2,6 +2,8 @@
 
 Lorem Ipsum
 
+⚠️ Work in progress 
+
 ```matlab
 clc
 clear
@@ -12,7 +14,7 @@ close all
 
 Genero distribuzione normale di $n$ punti random con deviazione standard $\sigma$ e media $\mu$. 
 
-In `MATLAB` è possibile generare delle distribuzioni normali utilizzando la funzione `randn();` tale funzione restituisce una distribuzione centrata sullo zero ($\mu =0$) e deviazione standard unitaria ($\sigma =1$). Qualora si volessero modificare tali parametri sarà sufficiente moltiplicare l'output per la $\sigma$ voluta e aggiungere $\mu$ al risultato del prodotto. La sintassi sarà quindi del tipo \texttt{data = sigma.*randn(n,2) + mu.} Si noti che il numero `2` come argomento della funzione `randn()` indica il numero di colonne da generare: una per le ascisse $x$, una per le ordinate $y$.
+In `MATLAB` è possibile generare delle distribuzioni normali utilizzando la funzione `randn();` tale funzione restituisce una distribuzione centrata sullo zero ($\mu =0$) e deviazione standard unitaria ($\sigma =1$). Qualora si volessero modificare tali parametri sarà sufficiente moltiplicare l'output per la $\sigma$ voluta e aggiungere $\mu$ al risultato del prodotto. La sintassi sarà quindi del tipo \texttt{data = sigma.*randn(n,2) + mu}. Si noti che il numero `2` come argomento della funzione `randn()` indica il numero di colonne da generare: una per le ascisse $x$, una per le ordinate $y$.
 
 Nel caso in cui si volesse specificare una deviazione standard differente per le $x$ e per le $y$ per modificare la forma della distribuzione, è possibile porre $\sigma =(\sigma_x ,\sigma_y )$.
 
@@ -31,17 +33,17 @@ sarà sufficiente effettuare moltiplicazione elemen-wise (prodotto di Hadamard) 
 
 $$
 \sigma \odot P=\left(\begin{array}{cc}
-\sigma_x \left(\begin{array}{c}
-x_1 \\
-x_2 \\
-...\\
-x_n 
-\end{array}\right) & \sigma_y \left(\begin{array}{c}
-y_1 \\
-y_2 \\
-...\\
-y_n 
-\end{array}\right)
+\sigma_x  & \sigma_y 
+\end{array}\right)\odot \left(\begin{array}{cc}
+x_1  & y_1 \\
+x_2  & y_2 \\
+... & ...\\
+x_n  & y_n 
+\end{array}\right)=\left(\begin{array}{cc}
+\sigma_x x_1  & \sigma_y y_1 \\
+\sigma_x x_2  & \sigma_y y_2 \\
+... & ...\\
+\sigma_x x_n  & \sigma_y y_n 
 \end{array}\right)
 $$
 
@@ -52,45 +54,31 @@ n = 500;                % numero di punti
 sigma = [2 0.9];        % deviazione standard su x e su y
 mu = 15;                % media
 
-% genero primo set di dati (l = 0)
+% genero set di dati
 data = sigma.*randn(n,2) + mu;
-l = repelem(0,n,1);
 
-% concateno secondo set di dati (l = 1)
-data = [data; (sigma*0.8).*randn(n,2) + mu*0.3];
-l = [l; repelem(1,n,1)];
 x = data(:,1);
 y = data(:,2);
 
-% rappresento dati
-% hist(x)
-% hist(y)
+endpoints = find_endpoints(data,2);     % limiti degli assi
+alpha = .3;                             % opacità dei punti
 
-plot(x,y,'o')
-xlim([floor(min(x))-1 ceil(max(x))]+1)
-ylim([floor(min(y))-1 ceil(max(y))]+1)
+% rappresento distribuzione
+figure;
+scatter(x,y,'o','filled','MarkerEdgeColor','none','MarkerFaceAlpha',alpha)
+xlim([0 endpoints(2)])
+ylim([0 endpoints(4)])
+xlabel("$x$",'Interpreter','latex')
+ylabel("$y$",'Interpreter','latex')
+title(sprintf("Distribuzione normale di %d punti",n))
+grid on
+box off
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
 ```
 
 ![figure_0.png](README_images/figure_0.png)
-
-Per filtrare le x e le y appartenenti alla prima distribuzione mi basta usare la sintassi `x(l==0)` e `y(l==0)` che sta per "prendimi le righe che rispettano la condizione `l==0`". Procedo quindi a rappresentare queste due distribuzioni
-
-```matlab
-% rappresento la prima distribuzione
-plot(x(l==0),y(l==0),'o')
-hold on
-% rappresento la seconda distribuzione
-plot(x(l==1),y(l==1),'o')
-hold off
-xlim([floor(min(x))-1 ceil(max(x))]+1)
-ylim([floor(min(y))-1 ceil(max(y))]+1)
-grid on
-legend("$l = 0$","$l = 1$",'Interpreter','latex','Location','best')
-xlabel("$x$",'Interpreter','latex')
-ylabel("$y$",'Interpreter','latex')
-```
-
-![figure_1.png](README_images/figure_1.png)
 
 Adesso applichiamo una **trasformazione lineare** alle distribuzioni dei dati. Se la matrice della trasformazione $T$ è
 
@@ -126,13 +114,14 @@ $$
 
 ```matlab
 % creo matrice trasformazione
-linear_trasformation = [1 1; -1 1]
+% linear_trasformation = [1 1; -1 1]
+linear_trasformation = rand(2,2)
 ```
 
 ```text:Output
 linear_trasformation = 2x2    
-     1     1
-    -1     1
+    0.1336    0.7411
+    0.0166    0.1898
 
 ```
 
@@ -143,17 +132,17 @@ transformed_data = (linear_trasformation*(data'))'
 ```
 
 ```text:Output
-transformed_data = 1000x2    
-   32.8385   -2.3840
-   30.2483   -3.6875
-   26.6734    1.6790
-   30.4866    1.2056
-   26.9441   -0.0823
-   31.7398    0.8069
-   33.7670   -4.6384
-   28.7217    2.2283
-   32.8389   -4.9562
-   29.7488    1.6099
+transformed_data = 500x2    
+   12.2076    2.8771
+   12.7623    3.0243
+   13.1453    3.1193
+   11.7652    2.7515
+   13.2342    3.1068
+   11.7873    2.7696
+   11.5075    2.6944
+   12.0457    2.8336
+   13.1519    3.1240
+   13.5176    3.1823
 
 ```
 
@@ -162,78 +151,211 @@ transformed_data = 1000x2
 x = transformed_data(:,1);
 y = transformed_data(:,2);
 
-% estremi
-endpoints = [floor(min(x))-1 floor(min(y))-1; ceil(max(x))+1 ceil(max(y))+1];
-endpoints = array2table(endpoints,"VariableNames",{'x','y'})
+endpoints = find_endpoints(transformed_data,2);     % limiti degli assi
+
+% rappresento distribuzione ruotata
+scatter(x,y,'o','filled','MarkerEdgeColor','none','MarkerFaceAlpha',alpha)
+xlim([0 endpoints(2)])
+ylim([endpoints(3) endpoints(4)])
+xlabel("$x$",'Interpreter','latex')
+ylabel("$y$",'Interpreter','latex')
+grid on
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+title("Distribuzione ruotata")
 ```
 
-| |x|y|
-|:--:|:--:|:--:|
-|1|1|-9|
-|2|38|8|
+![figure_1.png](README_images/figure_1.png)
+
+# Centering data
+
+```matlab
+% centro i dati sottraendo la media
+dfm = mean(transformed_data)
+```
+
+```text:Output
+dfm = 1x2    
+   13.0849    3.0871
+
+```
+
+```matlab
+B = transformed_data-dfm
+```
+
+```text:Output
+B = 500x2    
+   -0.8774   -0.2100
+   -0.3227   -0.0628
+    0.0603    0.0322
+   -1.3198   -0.3356
+    0.1493    0.0197
+   -1.2977   -0.3175
+   -1.5774   -0.3926
+   -1.0392   -0.2535
+    0.0670    0.0370
+    0.4326    0.0952
+
+```
 
 ```matlab
 
-% rappresento distribuzioni ruotate
-plot(x(l==0),y(l==0),'o')
-hold on
-plot(x(l==1),y(l==1),'o')
-hold off
-% xlim([floor(min(x))-1 ceil(max(x))+1])
-% ylim([floor(min(y))-1 ceil(max(y))+1])
-xlim([endpoints.x(1) endpoints.x(2)])
-ylim([endpoints.y(1) endpoints.y(2)])
-grid on
-legend("$l = 0$","$l = 1$",'Interpreter','latex')
+% rappresento distribuzioni centrate
+scatter(B(:,1),B(:,2), 'filled', 'MarkerFaceAlpha', alpha,'MarkerEdgeColor','none')
+title("Distribuzione ruotata e centrata")
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
-title("Distribuzioni ruotate")
+legend("Centered data")
+axis(find_endpoints(B,2))
+box off
+grid on
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
 ```
 
 ![figure_2.png](README_images/figure_2.png)
 
-# Centering data
+# Riferimenti matematici
 
-per centrare bla bla
+I *Principal components* sono degli assi su cui è possibile proiettare i dati massimizzando la varianza. Tali assi sono definiti come gli autovettori della matrice di covarianza $\Sigma$
+
+$$
+\Sigma =\left(\begin{array}{cc}
+var(\bar{x} ) & cov(\bar{x} ,\bar{y} )\\
+cov(\bar{y} ,\bar{x} ) & var(\bar{y} )
+\end{array}\right)
+$$
+
+Si noti che la diagonale della matrice $\Sigma$ contiene le varianze $\sigma_i$ che in `MATLAB` è possibile estrarre utilizzando la funzione `diag()`.
+
+Per quanto riguarda gli autovettori e gli autovalori, questi possono essere determinati utilizzando la sintassi `[autovettori, autovalori] = eig(C)` dove `C` è la matrice di covarianza. Noi saremo interessati all'autovalore massimo (che sarà utile per PC1).
 
 ```matlab
-% calcolo media
-xm = mean(x);
-ym = mean(y);
-
-% centro i dati
-xc = x-xm;
-yc = y-ym;
-
-% aggiorno estremi intervalli
-endpoints = [floor(min(xc))-1 floor(min(yc))-1; ceil(max(xc))+1 ceil(max(yc))+1];
-endpoints = array2table(endpoints,"VariableNames",{'x','y'})
+C = cov(B)
 ```
 
-| |x|y|
-|:--:|:--:|:--:|
-|1|-18|-9|
-|2|18|8|
+```text:Output
+C = 2x2    
+    0.5352    0.1280
+    0.1280    0.0317
+
+```
 
 ```matlab
-% plotto distribuzione centrata
-plot(xc(l==0),yc(l==0),'o')
+[evec,eval]=eig(C)
+```
+
+```text:Output
+evec = 2x2    
+    0.2331   -0.9725
+   -0.9725   -0.2331
+
+eval = 2x2    
+    0.0010         0
+         0    0.5659
+
+```
+
+```matlab
+[emax,id_emax]= max(diag(eval));
+[emin,id_emin]= min(diag(eval));
+
+% la posizione dell'autovettore massimo sarà utile per estrarre la colonna
+% degli autovettori pari a id_emax
+PC1 = evec(:,id_emax)
+```
+
+```text:Output
+PC1 = 2x1    
+   -0.9725
+   -0.2331
+
+```
+
+```matlab
+PC2 = evec(:,id_emin)
+```
+
+```text:Output
+PC2 = 2x1    
+    0.2331
+   -0.9725
+
+```
+
+```matlab
+
+% proiettiamo i dati B su PC1 eseguendo il prodotto scalare
+z = B*PC1
+```
+
+```text:Output
+z = 500x1    
+    0.9022
+    0.3284
+   -0.0662
+    1.3616
+   -0.1497
+    1.3359
+    1.6255
+    1.0697
+   -0.0738
+   -0.4429
+
+```
+
+```matlab
+
+% otteniamo coordinate
+projected_B = z*PC1'
+```
+
+```text:Output
+projected_B = 500x2    
+   -0.8773   -0.2103
+   -0.3194   -0.0765
+    0.0643    0.0154
+   -1.3241   -0.3173
+    0.1456    0.0349
+   -1.2992   -0.3113
+   -1.5807   -0.3788
+   -1.0403   -0.2493
+    0.0717    0.0172
+    0.4307    0.1032
+
+```
+
+```matlab
+p_b_2 = (B*PC2)*PC2';
+```
+
+```matlab
+% rappresento i dati
+scatter(B(:,1),B(:,2), 'filled', 'MarkerFaceAlpha', alpha,'MarkerEdgeColor','none')
 hold on
-plot(xc(l==1),yc(l==1),'o')
-% aggiungo assi
-plot(linspace(endpoints.x(1),endpoints.x(2),2),repelem(0,2),"Color","black")
-plot(repelem(0,2), linspace(endpoints.y(1),endpoints.y(2),2),"Color","black")
+scatter(projected_B(:,1),projected_B(:,2), 'filled', 'MarkerFaceAlpha', alpha,'MarkerEdgeColor','none')
+plot(projected_B(:,1),projected_B(:,2),'r-','LineWidth',1)
+plot(p_b_2(:,1),p_b_2(:,2),'g-','LineWidth',1)
 hold off
-xlim([endpoints.x(1) endpoints.x(2)])
-ylim([endpoints.y(1) endpoints.y(2)])
 grid on
-legend("$l = 0$","$l = 1$",'Interpreter','latex','Location','best')
+legend("Centered data","Projected data (PC1)","PC1","PC2",'Location','best')
+axis(find_endpoints(projected_B,.4))
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
-title("Distribuzioni centrate nell'origine")
+title("Dati proiettati su PC1")
+ax = gca;
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
 ```
 
 ![figure_3.png](README_images/figure_3.png)
+
+# SVD
+
+come fare tutto con SVD?
 
 # Note
 
@@ -241,7 +363,7 @@ Questo documento è stato generato convertendo in markdown un `MATLAB` livescrip
 
 ```matlab
 % esporto in md
-livescript2markdown("pca.mlx","../README.md","AddMention",true,"Format","github")
+livescript2markdown("pca_v2.mlx","../README.md","AddMention",true,"Format","github")
 ```
 
 ```text:Output
@@ -251,5 +373,13 @@ Note: Related images are saved in README_images
 ans = "C:\Users\Dennis Angemi\Documents\GitHub\machine-learning-for-physics\2_principal_component_analysis\README.md"
 ```
 
+# Functions
+
+```matlab
+function endpoints = find_endpoints(data_array,margin)
+    endpoints = [floor(min(data_array(:,1)))-margin ceil(max(data_array(:,1)))+margin floor(min(data_array(:,2)))-margin ceil(max(data_array(:,2)))+margin];
+end
+```
+
 ***
-*Generated from pca.mlx with [Live Script to Markdown Converter](https://github.com/roslovets/Live-Script-to-Markdown-Converter)*
+*Generated from pca_v2.mlx with [Live Script to Markdown Converter](https://github.com/roslovets/Live-Script-to-Markdown-Converter)*
