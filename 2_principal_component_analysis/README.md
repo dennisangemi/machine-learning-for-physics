@@ -47,7 +47,7 @@ x_n  & y_n
 \end{array}\right)
 $$
 
-In `MATLAB` la sintassi da utilizzare è \texttt{sigma.*randn(n,2)} dove `sigma = [2 0.9]` con $\sigma_x =2$, $\sigma_y =0.9$.
+In `MATLAB` la sintassi da utilizzare è `sigma.*randn(n,2)` dove `sigma = [2 0.9]` con $\sigma_x =2$, $\sigma_y =0.9$.
 
 ```matlab
 n = 500;                % numero di punti
@@ -120,8 +120,8 @@ linear_trasformation = rand(2,2)
 
 ```text:Output
 linear_trasformation = 2x2    
-    0.1336    0.7411
-    0.0166    0.1898
+    0.6401    0.0451
+    0.1806    0.7232
 
 ```
 
@@ -133,16 +133,16 @@ transformed_data = (linear_trasformation*(data'))'
 
 ```text:Output
 transformed_data = 500x2    
-   12.2076    2.8771
-   12.7623    3.0243
-   13.1453    3.1193
-   11.7652    2.7515
-   13.2342    3.1068
-   11.7873    2.7696
-   11.5075    2.6944
-   12.0457    2.8336
-   13.1519    3.1240
-   13.5176    3.1823
+   10.9626   13.6991
+   12.6617   14.8041
+    7.3931   12.8604
+   11.3931   14.0576
+   10.6902   13.7455
+    8.6212   13.3708
+    9.7265   13.4664
+   10.8292   15.4948
+   14.8114   14.0902
+   13.7479   13.3504
 
 ```
 
@@ -177,7 +177,7 @@ dfm = mean(transformed_data)
 
 ```text:Output
 dfm = 1x2    
-   13.0849    3.0871
+   10.2477   13.5207
 
 ```
 
@@ -187,16 +187,16 @@ B = transformed_data-dfm
 
 ```text:Output
 B = 500x2    
-   -0.8774   -0.2100
-   -0.3227   -0.0628
-    0.0603    0.0322
-   -1.3198   -0.3356
-    0.1493    0.0197
-   -1.2977   -0.3175
-   -1.5774   -0.3926
-   -1.0392   -0.2535
-    0.0670    0.0370
-    0.4326    0.0952
+    0.7149    0.1784
+    2.4141    1.2834
+   -2.8546   -0.6603
+    1.1454    0.5368
+    0.4425    0.2248
+   -1.6265   -0.1499
+   -0.5212   -0.0543
+    0.5815    1.9741
+    4.5637    0.5694
+    3.5002   -0.1703
 
 ```
 
@@ -218,9 +218,9 @@ ax.YAxisLocation = 'origin';
 
 ![figure_2.png](README_images/figure_2.png)
 
-# Riferimenti matematici
+# Ricerca dei PC
 
-I *Principal components* sono degli assi su cui è possibile proiettare i dati massimizzando la varianza. Tali assi sono definiti come gli autovettori della matrice di covarianza $\Sigma$
+I *Principal components* sono degli assi su cui è possibile proiettare i dati massimizzando la varianza. Tali assi sono definiti come gli **autovettori** della **matrice di covarianza** $\Sigma$
 
 $$
 \Sigma =\left(\begin{array}{cc}
@@ -229,60 +229,51 @@ cov(\bar{y} ,\bar{x} ) & var(\bar{y} )
 \end{array}\right)
 $$
 
-Si noti che la diagonale della matrice $\Sigma$ contiene le varianze $\sigma_i$ che in `MATLAB` è possibile estrarre utilizzando la funzione `diag()`.
-
-Per quanto riguarda gli autovettori e gli autovalori, questi possono essere determinati utilizzando la sintassi `[autovettori, autovalori] = eig(C)` dove `C` è la matrice di covarianza. Noi saremo interessati all'autovalore massimo (che sarà utile per PC1).
+In `MATLAB` è possibile determinare gli autovettori e gli autovalori di una matrice S utilizzando la sintassi `[autovettori, autovalori] = eig(S)` dove `C` è la matrice di covarianza. Noi saremo interessati all'autovalore massimo (che sarà utile per PC1).
 
 ```matlab
-C = cov(B)
+% determino matrice di covarianza
+S = cov(B)
 ```
 
 ```text:Output
-C = 2x2    
-    0.5352    0.1280
-    0.1280    0.0317
+S = 2x2    
+    1.6472    0.4410
+    0.4410    0.5224
 
 ```
 
 ```matlab
-[evec,eval]=eig(C)
+
+% calcolo autovettori e autovalori di S
+[evecs,evals]=eig(S)
 ```
 
 ```text:Output
-evec = 2x2    
-    0.2331   -0.9725
-   -0.9725   -0.2331
+evecs = 2x2    
+    0.3264   -0.9452
+   -0.9452   -0.3264
 
-eval = 2x2    
-    0.0010         0
-         0    0.5659
+evals = 2x2    
+    0.3701         0
+         0    1.7994
 
 ```
 
 ```matlab
-[emax,id_emax]= max(diag(eval));
-[emin,id_emin]= min(diag(eval));
 
-% la posizione dell'autovettore massimo sarà utile per estrarre la colonna
-% degli autovettori pari a id_emax
-PC1 = evec(:,id_emax)
+% individuo autovalore massimo nella diagonale di evals
+[eval_max,id_eval_emax]= max(diag(evals));
+
+% estraggo la colonna id_eval_max dalla matrice evecs per ottenere
+% l'autovettore PC1
+PC1 = evecs(:,id_eval_emax)
 ```
 
 ```text:Output
 PC1 = 2x1    
-   -0.9725
-   -0.2331
-
-```
-
-```matlab
-PC2 = evec(:,id_emin)
-```
-
-```text:Output
-PC2 = 2x1    
-    0.2331
-   -0.9725
+   -0.9452
+   -0.3264
 
 ```
 
@@ -294,55 +285,50 @@ z = B*PC1
 
 ```text:Output
 z = 500x1    
-    0.9022
-    0.3284
-   -0.0662
-    1.3616
-   -0.1497
-    1.3359
-    1.6255
-    1.0697
-   -0.0738
-   -0.4429
+   -0.7340
+   -2.7007
+    2.9138
+   -1.2579
+   -0.4916
+    1.5863
+    0.5103
+   -1.1939
+   -4.4996
+   -3.2529
 
 ```
 
 ```matlab
 
-% otteniamo coordinate
+% otteniamo coordinate delle proiezioni
 projected_B = z*PC1'
 ```
 
 ```text:Output
 projected_B = 500x2    
-   -0.8773   -0.2103
-   -0.3194   -0.0765
-    0.0643    0.0154
-   -1.3241   -0.3173
-    0.1456    0.0349
-   -1.2992   -0.3113
-   -1.5807   -0.3788
-   -1.0403   -0.2493
-    0.0717    0.0172
-    0.4307    0.1032
+    0.6938    0.2396
+    2.5528    0.8815
+   -2.7542   -0.9510
+    1.1890    0.4106
+    0.4647    0.1605
+   -1.4995   -0.5178
+   -0.4824   -0.1666
+    1.1286    0.3897
+    4.2532    1.4687
+    3.0747    1.0617
 
-```
-
-```matlab
-p_b_2 = (B*PC2)*PC2';
 ```
 
 ```matlab
 % rappresento i dati
 scatter(B(:,1),B(:,2), 'filled', 'MarkerFaceAlpha', alpha,'MarkerEdgeColor','none')
 hold on
-scatter(projected_B(:,1),projected_B(:,2), 'filled', 'MarkerFaceAlpha', alpha,'MarkerEdgeColor','none')
+scatter(projected_B(:,1),projected_B(:,2), 'Marker','x', 'MarkerFaceAlpha', alpha)
 plot(projected_B(:,1),projected_B(:,2),'r-','LineWidth',1)
-plot(p_b_2(:,1),p_b_2(:,2),'g-','LineWidth',1)
 hold off
 grid on
-legend("Centered data","Projected data (PC1)","PC1","PC2",'Location','best')
-axis(find_endpoints(projected_B,.4))
+legend("Centered data","Projected data (PC1)","PC1",'Location','best')
+axis(find_endpoints(projected_B,1))
 xlabel("$x$",'Interpreter','latex')
 ylabel("$y$",'Interpreter','latex')
 title("Dati proiettati su PC1")
@@ -355,7 +341,7 @@ ax.YAxisLocation = 'origin';
 
 # SVD
 
-come fare tutto con SVD?
+Vedremo come fare tutto con SVD
 
 # Note
 
