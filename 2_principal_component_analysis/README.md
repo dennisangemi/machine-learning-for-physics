@@ -14,7 +14,7 @@ close all
 
 Genero distribuzione normale di $n$ punti random con deviazione standard $\sigma$ e media $\mu$. 
 
-In `MATLAB` è possibile generare delle distribuzioni normali utilizzando la funzione `randn();` tale funzione restituisce una distribuzione centrata sullo zero ($\mu =0$) e deviazione standard unitaria ($\sigma =1$). Qualora si volessero modificare tali parametri sarà sufficiente moltiplicare l'output per la $\sigma$ voluta e aggiungere $\mu$ al risultato del prodotto. La sintassi sarà quindi del tipo \texttt{data = sigma.*randn(n,2) + mu}. Si noti che il numero `2` come argomento della funzione `randn()` indica il numero di colonne da generare: una per le ascisse $x$, una per le ordinate $y$.
+In `MATLAB` è possibile generare delle distribuzioni normali utilizzando la funzione `randn();` tale funzione restituisce una distribuzione centrata sullo zero ($\mu =0$) e deviazione standard unitaria ($\sigma =1$). Qualora si volessero modificare tali parametri sarà sufficiente moltiplicare l'output per la $\sigma$ voluta e aggiungere $\mu$ al risultato del prodotto. La sintassi sarà quindi del tipo `data = sigma.*randn(n,2) + mu`. Si noti che il numero `2` come argomento della funzione `randn()` indica il numero di colonne da generare: una per le ascisse $x$, una per le ordinate $y$.
 
 Nel caso in cui si volesse specificare una deviazione standard differente per le $x$ e per le $y$ per modificare la forma della distribuzione, è possibile porre $\sigma =(\sigma_x ,\sigma_y )$.
 
@@ -229,7 +229,7 @@ cov(\bar{y} ,\bar{x} ) & var(\bar{y} )
 \end{array}\right)
 $$
 
-In `MATLAB` è possibile determinare gli autovettori e gli autovalori di una matrice S utilizzando la sintassi `[autovettori, autovalori] = eig(S)` dove `C` è la matrice di covarianza. Noi saremo interessati all'autovalore massimo (che sarà utile per PC1).
+In `MATLAB` è possibile determinare gli autovettori e gli autovalori di una matrice S utilizzando la sintassi `[autovettori, autovalori] = eig(S)` dove `S` è la matrice di covarianza. Noi saremo interessati all'autovalore massimo (che sarà utile per PC1).
 
 ```matlab
 % determino matrice di covarianza
