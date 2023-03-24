@@ -1,11 +1,28 @@
 # MNIST
 
-Obiettivo: costruire un modello che sia in grado di riconoscere carattere numerico manoscritto
+Obiettivo: costruire un modello che sia in grado di riconoscere carattere numerico manoscritto.
+
+paragonare modello dl senza preprocessing e modello costruito dopo preprocessing
+
+## Step
+
+Al fine di diminuire il numero di neuroni della rete e migliorare le prestazioni, si effettua del preprocessing.
+
+- Importing data
+- Preprocessing
+  1. eliminazione rumore (filtro mediano)
+  1. uniforming thickness
+  1. resizing & centering
+  1. fixing discontinuity (reconstructing ink hole)
+  1. normalizing
+- model
 
 Cominciamo importando le librerie necessarie per il corretto funzionamento del codice (tensorflow, keras, matplotlib)
 
 
 ```python
+%%capture
+import cv2
 import tensorflow.keras as keras
 import tensorflow as tf
 import mnist
@@ -14,15 +31,6 @@ import matplotlib.pyplot as plt
 from   tensorflow.keras.models import Sequential
 from   tensorflow.keras.layers import Dense
 ```
-
-    2023-03-22 23:25:58.065590: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
-    To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-    2023-03-22 23:26:06.000025: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
-    2023-03-22 23:26:06.000107: I tensorflow/compiler/xla/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
-    2023-03-22 23:26:26.942192: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory
-    2023-03-22 23:26:26.954086: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory
-    2023-03-22 23:26:26.954147: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
-
 
 
 ```python
@@ -53,8 +61,8 @@ npat = 7
 print("Ecco il pattern n.", npat)
 print("Il valore atteso è: ", y_train[npat]);
 
-image = x_train[npat];
-plt.imshow(image, cmap = 'gray')
+img = x_train[npat];
+plt.imshow(img, cmap = 'gray')
 plt.show(block = False)
 ```
 
@@ -68,9 +76,247 @@ plt.show(block = False)
     
 
 
+Da adesso in poi useremo una variabile temporanea `img` che conterrà l'immagine `x_train[npat]` in modo tale da non lavorare con l'intero array di immagini.
+
+## Reducing noise
+
+L'idea è quella di applicare un filtro mediano.
+
+Utilizzeremo la libreria `OpenCV` (che importeremo con `import cv2`) dopo averla installata da terminale `pip install opencv-python`
+
+
+```python
+# add noise in pixel 3,3
+img[3,3] = 100
+
+# show img
+plt.imshow(img, cmap = 'gray')
+plt.show()
+```
+
+
+    
+![png](img/output_8_0.png)
+    
+
+
+
+```python
+# using csv2 to remove noise
+# x_train = cv2.medianBlur(x_train, 1)
+
+# bisognerebbe fare un for ma l'operazioe sembra molto lenta
+dn1 = cv2.fastNlMeansDenoising(img, h=60, templateWindowSize=3, searchWindowSize=8)
+dn2 = cv2.GaussianBlur(img, (3, 3), 1)
+dn3 = cv2.bilateralFilter(img, 9, 70, 70)
+
+denoised = [dn1, dn2, dn2]
+titles = ["fastNlMeansDenoising", "GaussianBlur", "bilateralFilter"]
+
+# plotting
+plt.title("Noisy image")
+plt.imshow(img, cmap = 'gray')
+plt.show()
+
+for i in range(len(denoised)):
+    plt.subplot(1,4,i+1)
+    plt.title(titles[i])
+    plt.imshow(denoised[i], cmap = 'gray')
+    plt.show
+
+# scelgo fastNlMeansDenoising
+img = dn1
+```
+
+
+    
+![png](img/output_9_0.png)
+    
+
+
+
+    
+![png](img/output_9_1.png)
+    
+
+
+
+```python
+plt.imshow(img, cmap = 'gray')
+plt.title("Denoised")
+plt.show()
+```
+
+
+    
+![png](img/output_10_0.png)
+    
+
+
+
+```python
+img[3,3]
+```
+
+
+
+
+    3
+
+
+
+## Binarizing
+
+Al fine di uniformare lo spessore dei caratteri, sembrerebbe necessario effettuare una binarization ovvero rendere "binari" i valori dei pixel (0 oppure 1).
+
+Esistono varie tecniche ([vedi qui](https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html)) ma noi proveremo ad usare `cv2.ADAPTIVE_THRESH_GAUSSIAN_C`
+
+```python
+th3 = cv.adaptiveThreshold(img,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv.THRESH_BINARY,11,2)
+```
+
+se non funzinoa, possiamo provare il metodo di Otzu:
+```python
+ret3,th3 = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+```
+
+
+```python
+# adaptive thresh gaussian
+atg = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,11,6)
+
+# otsu
+ret,img = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+# plotting results
+plt.subplot(1,2,1)
+plt.title("Adaptive thresh gaussian")
+plt.imshow(atg, cmap = 'gray')
+plt.subplot(1,2,2)
+plt.title("Otsu's Binarization")
+plt.imshow(img, cmap = 'gray')
+plt.show()
+```
+
+
+    
+![png](img/output_13_0.png)
+    
+
+
+Continueremo utilizzando il metodo di Otsu
+
+## Fix discontinuity
+
+OpenCV's Closing is reverse of Opening, Dilation followed by Erosion. It is useful in closing small holes inside the foreground objects, or small black points on the object.
+
+`closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)`
+
+dove 
+
+`kernel = np.ones((5,5),np.uint8)`
+
+è la dimensione della finestra di azione del filtro.
+
+[Click here](https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html) for more info
+
+Si tratta essenzialmente di un `dilate` seguito da `erode` per "coprire i buchi"
+
+
+```python
+# pixel lato finestra
+w = 3
+
+# creo finestra
+kernel = np.ones((w,w),np.uint8)
+
+# rimuovo buchi
+img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+
+plt.imshow(img, cmap = 'gray')
+plt.show()
+```
+
+
+    
+![png](img/output_16_0.png)
+    
+
+
+## Uniformare thickness
+
+- domanda senza risposta stackoverflow https://stackoverflow.com/questions/56601130/how-to-reduce-the-thickness-of-the-contours
+
+- qui una risposta https://stackoverflow.com/questions/51133962/how-can-i-scale-a-thickness-of-a-character-in-image-using-python-opencv
+
+Lo strumento vincente sembra erosion di OpenCV ([leggi qui](https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html#erosion))
+
+La sintassi è:
+
+```python
+img = cv2.imread('j.png',0)
+kernel = np.ones((5,5),np.uint8)
+erosion = cv2.erode(img,kernel,iterations = 1)
+```
+
+
+```python
+w = 2
+
+# creo finestra
+kernel = np.ones((w,w),np.uint8)
+
+# riduco spessore
+erosion = cv2.erode(img,kernel,iterations = 1)
+
+plt.imshow(erosion, cmap = 'gray')
+plt.show()
+```
+
+
+    
+![png](img/output_18_0.png)
+    
+
+
+## Erode without binarizing
+
+Ecco quello che si ottiene lanciando `cv2.erode` su un'immagine non precedentemente binarizzata
+
+
+```python
+w = 2
+kernel = np.ones((w,w),np.uint8)
+
+for i in range(w):
+    erosion2 = cv2.erode(x_train[npat],kernel,iterations = i+1)
+    plt.subplot(1,2,i+1)
+    plt.imshow(erosion2, cmap = 'gray')
+    titolo = "Erode: kernel={} ; iterations={}".format(w, i+1)
+    plt.title(titolo)
+plt.show()
+```
+
+
+    
+![png](img/output_20_0.png)
+    
+
+
+### Domanda
+
+Conviene binarizzare?
+
+## focus to content resizing
+
+https://stackoverflow.com/questions/74089678/remove-whitespace-of-a-image-python-opencv
+
 
 ```python
 # flattening
+# si può fare anche con neural networks
 x_train = x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2])
 x_test = x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])
 
