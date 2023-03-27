@@ -87,7 +87,7 @@ plt.show(block = False)
 
 
 ```python
-# crea funzione 'recognize_digit' per riconoscere il numero che crei il modello sopra
+# crea funzione 'recognize_digit' per costruire e addestrare modello per riconoscere numeri manoscritti
 def recognize_digit(shape, n_epochs, n_categories, x_train, y_train, x_test, y_test, path):
 
     # rendo categoriche le variabili di output
