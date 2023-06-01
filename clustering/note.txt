@@ -1,0 +1,37 @@
+
+prendere immagine e fare compressione attraverso clustering.
+
+se io posso permettere un minimo di degradazione ragionata una tecnica è quella di fare clustering. 
+
+Dividere immagine in quadratini che generano n vettori che clusterizziamo con un numero di 
+
+abbiamo 256*256
+
+diviso per 4
+
+sono 1024 blocchettini
+
+mettiamo numero clustering pari a 64 ad esempio
+più aumernto nuemero centroidi nc più l'immagine sarà fedele.
+
+Ricostruiamo poi l'immagine e invece di ridisegnare l'immagine.
+
+2^ 8 * 2^8 * 2^3 = 2^19 
+
+I miei quadratini sono 256/4 
+
+in octave insatlliamo image
+pkg install -forge image
+
+dobbiamo fare 2 script
+uno per preparare file di learning
+uno che date le codewords
+
+data immagine, lui legge, splitta e la prepara per il learning
+
+il learning vuole sapere quanti sono i pattern
+
+la prima fase:
+data immagine fare codebook
+poi matrice di indici
+poi stampare centroidi relativi a quegli indici
